@@ -1,4 +1,4 @@
-# 📚 AI Buddy Documentation
+# 📚 AI Meet Buddy Documentation
 
 This folder contains all the documentation and guides for the AI Buddy project. The guides are organized by feature and functionality.
 
