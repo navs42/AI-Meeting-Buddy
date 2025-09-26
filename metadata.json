@@ -1,0 +1,5 @@
+{
+  "name": "AI Meeting Buddy",
+  "description": "A productivity application to help users manage their meetings effectively. It handles scheduling, real-time assistance, note-taking, and task management.",
+  "requestFramePermissions": []
+}
