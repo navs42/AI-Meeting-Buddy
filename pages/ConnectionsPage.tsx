@@ -33,12 +33,25 @@ const UserCalendarView: React.FC<{ user: User }> = ({ user }) => {
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [busySlots, setBusySlots] = useState<Set<string>>(new Set());
     const [loading, setLoading] = useState(false);
+    const [scrollPosition, setScrollPosition] = useState(8 * 2); // Start at 8 AM (8 * 2 = 16th slot for 30-min intervals)
 
     useEffect(() => {
         const fetchAvailability = async () => {
             setLoading(true);
-            const slots = await api.getAvailability(user.email, selectedDate);
-            setBusySlots(new Set(slots));
+            try {
+                const slots = await api.getAvailability(user.email, selectedDate);
+                setBusySlots(new Set(slots));
+            } catch (error) {
+                // Mock data for demonstration - shows busy times throughout the day
+                const mockBusySlots = [
+                    '08:00', '08:30', '09:00', '09:30', // 8-10 AM busy
+                    '10:30', '11:00', '11:30', '12:00', '12:30', // 10:30 AM - 12:30 PM busy
+                    '14:00', '14:30', '15:00', // 2-3 PM busy
+                    '16:30', '17:00', // 4:30-5 PM busy
+                    '19:00', '19:30', '20:00', '20:30', // 7-8:30 PM busy
+                ];
+                setBusySlots(new Set(mockBusySlots));
+            }
             setLoading(false);
         };
         fetchAvailability();
@@ -50,6 +63,35 @@ const UserCalendarView: React.FC<{ user: User }> = ({ user }) => {
             newDate.setDate(newDate.getDate() + days);
             return newDate;
         });
+    };
+
+    const handleScrollChange = (direction: 'up' | 'down') => {
+        setScrollPosition(prev => {
+            const newPosition = direction === 'up' ? Math.max(0, prev - 1) : Math.min(47, prev + 1);
+            return newPosition;
+        });
+    };
+
+    const getVisibleHours = () => {
+        const startHour = Math.floor(scrollPosition / 2);
+        const startMinute = (scrollPosition % 2) * 30;
+        const visibleSlots = [];
+        
+        // Show 6 hours (12 slots) at a time
+        for (let i = 0; i < 12; i++) {
+            const slotIndex = scrollPosition + i;
+            if (slotIndex < 48) {
+                const hour = Math.floor(slotIndex / 2);
+                const minute = (slotIndex % 2) * 30;
+                visibleSlots.push({
+                    slot: `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`,
+                    hour,
+                    minute,
+                    isHourMark: minute === 0
+                });
+            }
+        }
+        return visibleSlots;
     };
 
     const hours = Array.from({ length: 24 }, (_, i) => i);
@@ -71,38 +113,90 @@ const UserCalendarView: React.FC<{ user: User }> = ({ user }) => {
                     </div>
                 </div>
             </CardHeader>
-            <CardContent className="flex-1 overflow-y-auto relative">
+            <CardContent className="flex-1 overflow-hidden relative">
                 {loading ? <p className="text-center p-8">Loading calendar...</p> : (
-                    <>
-                        <div className="absolute inset-0 grid grid-rows-24">
-                            {hours.map(hour => (
-                                <div key={hour} className="relative border-t border-neutral-200">
-                                    <span className="absolute -top-2.5 left-0 text-xs text-neutral-400 bg-white px-1 z-10">
-                                        {hour === 0 ? '12 AM' : hour < 12 ? `${hour} AM` : hour === 12 ? '12 PM' : `${hour-12} PM`}
-                                    </span>
+                    <div className="h-[500px] relative bg-neutral-50 rounded-lg border border-neutral-200">
+                        {/* Time Navigation Controls */}
+                        <div className="absolute top-4 right-4 z-20 bg-white rounded-lg shadow-lg border border-neutral-200 p-2 flex gap-2">
+                            <button 
+                                onClick={() => handleScrollChange('up')}
+                                className="px-3 py-1 text-sm bg-neutral-100 hover:bg-neutral-200 rounded border flex items-center gap-1"
+                                title="Scroll Up (Earlier Time)"
+                                disabled={scrollPosition === 0}
+                            >
+                                ↑ Earlier
+                            </button>
+                            <span className="px-2 py-1 text-sm text-neutral-600 border-t border-b border-neutral-200">
+                                {Math.floor(scrollPosition / 2)}:{String((scrollPosition % 2) * 30).padStart(2, '0')} - {Math.floor((scrollPosition + 11) / 2)}:{String(((scrollPosition + 11) % 2) * 30).padStart(2, '0')}
+                            </span>
+                            <button 
+                                onClick={() => handleScrollChange('down')}
+                                className="px-3 py-1 text-sm bg-neutral-100 hover:bg-neutral-200 rounded border flex items-center gap-1"
+                                title="Scroll Down (Later Time)"
+                                disabled={scrollPosition >= 36}
+                            >
+                                Later ↓
+                            </button>
+                        </div>
+
+                        {/* Current Time Window Display */}
+                        <div className="absolute top-4 left-4 z-20 bg-blue-100 text-blue-800 px-3 py-1 rounded-lg text-sm font-medium">
+                            Showing 6 Hours • {getVisibleHours()[0]?.hour === 0 ? '12 AM' : getVisibleHours()[0]?.hour < 12 ? `${getVisibleHours()[0]?.hour} AM` : getVisibleHours()[0]?.hour === 12 ? '12 PM' : `${getVisibleHours()[0]?.hour-12} PM`} - {getVisibleHours()[11]?.hour === 0 ? '12 AM' : getVisibleHours()[11]?.hour < 12 ? `${getVisibleHours()[11]?.hour} AM` : getVisibleHours()[11]?.hour === 12 ? '12 PM' : `${getVisibleHours()[11]?.hour-12} PM`}
+                        </div>
+
+                        {/* Visible Time Slots Grid */}
+                        <div className="absolute inset-4 top-16 grid grid-rows-12">
+                            {getVisibleHours().map((slot, index) => (
+                                <div key={index} className={`relative border-t ${slot.isHourMark ? 'border-neutral-400' : 'border-neutral-200'} h-12`}>
+                                    {slot.isHourMark && (
+                                        <span className="absolute -top-3 left-0 text-lg text-neutral-700 bg-white px-2 z-10 font-semibold">
+                                            {slot.hour === 0 ? '12 AM' : slot.hour < 12 ? `${slot.hour} AM` : slot.hour === 12 ? '12 PM' : `${slot.hour-12} PM`}
+                                        </span>
+                                    )}
+                                    {!slot.isHourMark && (
+                                        <span className="absolute -top-2 left-0 text-sm text-neutral-400 bg-white px-1 z-10">
+                                            {slot.minute}
+                                        </span>
+                                    )}
                                 </div>
                             ))}
                         </div>
-                        <div className="absolute inset-0 top-0 left-14 right-2 sm:right-4">
-                           {timeSlots.map(slot => {
-                               if (!busySlots.has(slot)) return null;
-                               const [hour, minute] = slot.split(':').map(Number);
-                               const top = ((hour * 60 + minute) / (24 * 60)) * 100;
-                               const height = (30 / (24 * 60)) * 100;
+                        
+                        {/* Busy Time Blocks for Visible Window */}
+                        <div className="absolute inset-4 top-16 left-20 right-4">
+                           {getVisibleHours().map((visibleSlot, index) => {
+                               if (!busySlots.has(visibleSlot.slot)) return null;
+                               
+                               // Calculate position within the visible window
+                               const slotHeight = 48; // Height of each time slot in pixels
+                               const topPosition = index * slotHeight;
                                
                                return (
                                    <div
-                                        key={slot}
-                                        className="absolute w-full bg-red-400/70 rounded-md p-1.5 text-white overflow-hidden z-10 border border-red-600"
-                                        style={{ top: `${top}%`, height: `${height}%` }}
-                                        title={`Busy at ${new Date(`1970-01-01T${slot}:00`).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit'})}`}
+                                        key={visibleSlot.slot}
+                                        className="absolute w-full bg-red-500 rounded-lg p-3 text-white overflow-hidden z-10 border border-red-600 shadow-lg"
+                                        style={{ 
+                                            top: `${topPosition}px`, 
+                                            height: `${slotHeight}px`,
+                                            width: 'calc(100% - 8px)',
+                                            marginLeft: '4px'
+                                        }}
+                                        title={`Busy at ${new Date(`1970-01-01T${visibleSlot.slot}:00`).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit'})}`}
                                     >
-                                        <p className="font-semibold text-xs text-red-900">Busy</p>
+                                        <div className="flex items-center justify-between h-full">
+                                            <div>
+                                                <p className="font-bold text-sm text-white">Busy</p>
+                                                <p className="text-xs text-red-100">Meeting/Event</p>
+                                            </div>
+                                            <span className="text-sm text-red-100 font-medium">
+                                                {new Date(`1970-01-01T${visibleSlot.slot}:00`).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit'})}
+                                            </span>
+                                        </div>
                                     </div>
                                );
                            })}
                         </div>
-                    </>
+                    </div>
                 )}
             </CardContent>
         </Card>

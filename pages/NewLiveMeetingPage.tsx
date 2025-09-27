@@ -176,29 +176,30 @@ const AIChatPanel: React.FC<{
     }, [messages]);
 
     return (
-        <div className="h-full bg-black/20 backdrop-blur-lg rounded-lg border border-white/20 p-3 flex flex-col">
-            <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-                    <BotMessageSquareIcon className="w-4 h-4" />
+        <div className="h-full bg-gradient-to-br from-black/30 to-black/20 backdrop-blur-xl rounded-xl border border-white/30 p-4 flex flex-col shadow-2xl">
+            <div className="flex items-center justify-between mb-4">
+                <h3 className="text-base font-bold text-white flex items-center gap-2">
+                    <BotMessageSquareIcon className="w-5 h-5 text-blue-400" />
                     AI Assistant
                 </h3>
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
             </div>
             
-            <div className="flex-1 overflow-y-auto mb-3 space-y-2">
+            <div className="flex-1 overflow-y-auto mb-4 space-y-3 pr-2">
                 {messages.map((message) => (
-                    <div key={message.id} className={`flex gap-2 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`w-5 h-5 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0 text-xs ${
-                            message.role === 'user' ? 'bg-blue-500' : 'bg-primary'
+                    <div key={message.id} className={`flex gap-3 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                        <div className={`w-6 h-6 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0 text-sm ${
+                            message.role === 'user' ? 'bg-blue-500 shadow-lg' : 'bg-primary shadow-lg'
                         }`}>
                             {message.role === 'user' ? 'U' : 'A'}
                         </div>
-                        <div className={`max-w-[80%] p-2 rounded-lg text-xs ${
+                        <div className={`max-w-[85%] p-3 rounded-xl text-sm shadow-lg ${
                             message.role === 'user' 
-                                ? 'bg-blue-600 text-white' 
-                                : 'bg-white/10 text-neutral-200'
+                                ? 'bg-blue-600 text-white border border-blue-500' 
+                                : 'bg-white/15 text-neutral-100 border border-white/20'
                         }`}>
-                            <p>{message.content}</p>
-                            <p className="text-xs opacity-70 mt-1">{message.timestamp}</p>
+                            <p className="leading-relaxed">{message.content}</p>
+                            <p className="text-xs opacity-70 mt-2">{message.timestamp}</p>
                         </div>
                     </div>
                 ))}
@@ -210,14 +211,14 @@ const AIChatPanel: React.FC<{
                     type="text" 
                     value={newMessage}
                     onChange={(e) => onNewMessageChange(e.target.value)}
-                    placeholder="Ask AI Assistant..." 
-                    className="flex-1 bg-white/10 border-white/20 text-white placeholder:text-neutral-400 text-xs"
+                    placeholder="Ask AI Assistant anything about the meeting..." 
+                    className="flex-1 bg-white/20 border-white/30 text-white placeholder:text-neutral-300 text-sm py-3 px-4 rounded-lg focus:bg-white/25 focus:border-white/40 transition-all duration-200"
                     onKeyPress={(e) => e.key === 'Enter' && onSendMessage(newMessage)}
                 />
                 <Button 
                     onClick={() => onSendMessage(newMessage)}
                     size="sm"
-                    className="bg-primary text-white text-xs px-2 py-1"
+                    className="bg-primary hover:bg-primary/80 text-white text-sm px-4 py-3 rounded-lg font-medium transition-all duration-200 shadow-lg"
                 >
                     Send
                 </Button>
@@ -354,7 +355,7 @@ const NewLiveMeetingPage: React.FC = () => {
             {/* Main Content - 80% - 20% Layout */}
             <main className="flex-1 flex overflow-hidden min-h-0">
                 {/* Left Panel - 80% - Video Area */}
-                <section className="w-4/5 flex flex-col gap-4 p-4 min-h-0">
+                <section className="w-3/4 flex flex-col gap-4 p-4 min-h-0">
                     {/* Main Video */}
                     <div className="flex-1 min-h-0 bg-black rounded-lg flex items-center justify-center relative">
                         <div className="text-center">
@@ -386,10 +387,10 @@ const NewLiveMeetingPage: React.FC = () => {
                     </div>
                 </section>
 
-                {/* Right Panel - 20% - Split into 3 parts */}
-                <aside className="w-1/5 flex flex-col gap-4 p-4 min-h-0">
+                {/* Right Panel - 30% - Split into 3 parts */}
+                <aside className="w-3/10 flex flex-col gap-4 p-4 min-h-0">
                     {/* Live Transcription - 20% */}
-                    <div className="h-1/5 min-h-[180px]">
+                    <div className="h-3/5 min-h-[150px]">
                         <LiveTranscriptionPanel
                             transcript={transcript}
                             isRecording={isRecording}

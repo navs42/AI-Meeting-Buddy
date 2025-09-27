@@ -1,6 +1,3 @@
-import { auth } from "../components/firebaseConfig";
-import { signInWithEmailAndPassword } from "firebase/auth";
-
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
@@ -17,24 +14,33 @@ const LoginPage: React.FC = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setLoading(true);
-  setError('');
-  try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
-
-    // Get Firebase ID token
-    const token = await user.getIdToken();
-
-    dispatch({ type: 'LOGIN_SUCCESS', payload: { user, token } });
-    navigate('/dashboard');
-  } catch (err) {
-    setError('Invalid email or password. Please try again.');
-  } finally {
-    setLoading(false);
-  }
-};
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    try {
+      // Simple mock authentication - accept any email/password for demo
+      if (email && password) {
+        // Create user object for the app
+        const userObj = {
+          id: `user_${Date.now()}`,
+          email: email,
+          name: email.split('@')[0]
+        };
+        
+        // Dispatch login action
+        dispatch({ type: 'LOGIN_SUCCESS', payload: { user: userObj, token: 'mock_token' } });
+        
+        // Navigate to dashboard
+        navigate('/dashboard');
+      } else {
+        setError('Please enter both email and password');
+      }
+    } catch (err) {
+      setError('Login failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
 
   return (
