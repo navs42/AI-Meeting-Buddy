@@ -42,7 +42,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isMobileOpen, setMobileOpen, isCollap
         ${isCollapsed ? 'md:w-20' : 'md:w-64'}
       `}>
         <div className={`flex items-center mb-8 ${isCollapsed ? 'md:justify-center' : 'md:justify-between'}`}>
-            <h1 className={`text-2xl font-bold text-primary px-2 transition-opacity duration-200 ${isCollapsed ? 'md:opacity-0 md:hidden' : 'opacity-100'}`}>AI Buddy</h1>
+            <h1 className={`text-2xl font-bold text-primary px-2 transition-opacity duration-200 ${isCollapsed ? 'md:opacity-0 md:hidden' : 'opacity-100'}`}>MeetSync</h1>
             <button
                 onClick={() => setCollapsed(!isCollapsed)}
                 className="hidden md:block p-1 rounded-full text-neutral-500 hover:bg-neutral-200"

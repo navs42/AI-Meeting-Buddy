@@ -213,16 +213,24 @@ const DailyScheduleView: React.FC<{ selectedDate: Date }> = ({ selectedDate }) =
                 </div>
                 <div className="absolute inset-0 top-0 left-14 right-2 sm:right-4">
                     {meetingsOnSelectedDate.map(meeting => (
-                        <div
-                            key={meeting.id}
-                            className="absolute w-full bg-primary/80 rounded-md p-1.5 text-white overflow-hidden z-10 border border-primary-focus cursor-pointer hover:bg-primary"
-                            style={getMeetingPosition(meeting)}
-                            // Fix: Corrected the use of the 'timeZone' option by passing the 'timezone' variable.
-                            title={`${meeting.title} (${new Date(meeting.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', timeZone: timezone })} - ${new Date(meeting.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', timeZone: timezone })})`}
-                        >
-                            <p className="font-bold text-xs truncate">{meeting.title}</p>
-                            <p className="text-xs opacity-80 truncate">{new Date(meeting.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
-                        </div>
+                       <div
+  key={meeting.id}
+  className="absolute left-14 right-2 sm:right-4 bg-primary/80 rounded-md px-2 py-1 text-white z-10 border border-primary-focus cursor-pointer hover:bg-primary flex flex-col justify-center"
+  style={getMeetingPosition(meeting)}
+>
+  <p className="font-semibold text-xs text-center leading-tight truncate">
+    {meeting.title}
+  </p>
+  <p className="text-[10px] opacity-80 text-center leading-tight">
+    {new Date(meeting.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+    {" - "}
+    {new Date(meeting.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+  </p>
+</div>
+
+
+
+
                     ))}
                 </div>
                  {meetingsOnSelectedDate.length === 0 && (

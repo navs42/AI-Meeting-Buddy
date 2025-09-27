@@ -108,32 +108,13 @@ const NotificationsDropdown: React.FC = () => {
         {state.notifications.length > 0 ? state.notifications.map(n => (
           <div key={n.id} className="p-3 rounded-lg hover:bg-neutral-100">
             <p className="text-sm text-neutral-700">
-              Meeting request from <span className="font-semibold text-secondary">{n.from}</span> for "{n.meetingTitle}".
+              Meeting scheduled from <span className="font-semibold text-secondary">{n.from}</span> for "{n.meetingTitle}".
             </p>
-            <div className="flex justify-end gap-2 mt-2">
-              <Button size="sm" variant="secondary" onClick={() => handleAccept(n.id)}>Accept</Button>
-              <Button size="sm" variant="ghost" onClick={() => { setSelectedNotificationId(n.id); setDeclineModalOpen(true); }}>Decline</Button>
-              <Button size="sm" variant="ghost" onClick={() => { setSelectedNotificationId(n.id); setRescheduleModalOpen(true); }}>Reschedule</Button>
-            </div>
+            
           </div>
         )) : <p className="text-sm text-neutral-500 p-4 text-center">No new notifications</p>}
       </div>
-      <Modal isOpen={declineModalOpen} onClose={() => setDeclineModalOpen(false)} title="Decline Meeting">
-          <div className="space-y-4">
-            <p className="text-neutral-600">Are you sure you want to decline this meeting? Please provide a reason (optional).</p>
-            <textarea
-                value={declineReason}
-                onChange={(e) => setDeclineReason(e.target.value)}
-                rows={3}
-                placeholder="e.g., Conflicting appointment"
-                className="w-full px-3 py-2 border border-neutral-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary placeholder:text-neutral-400 text-neutral-900"
-            />
-          </div>
-          <div className="mt-6 flex justify-end gap-2">
-            <Button variant="ghost" onClick={() => setDeclineModalOpen(false)}>Cancel</Button>
-            <Button variant="danger" onClick={handleDecline}>Decline</Button>
-          </div>
-      </Modal>
+      
       <Modal isOpen={rescheduleModalOpen} onClose={() => setRescheduleModalOpen(false)} title="Reschedule Meeting">
         <div className="space-y-4">
           <p className="text-neutral-600">Propose a new time for this meeting.</p>
