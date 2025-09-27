@@ -27,7 +27,7 @@ const getInitialData = (): Database => {
     return {
         user: {
             id: 'user-1',
-            name: 'Alex Doe',
+            name: 'Vishal',
             email: userEmail,
             company: 'Innovate Inc.',
             timezone: 'America/New_York',
