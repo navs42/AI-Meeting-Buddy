@@ -97,7 +97,7 @@ const NotesView: React.FC<{ meeting: Meeting | null }> = ({ meeting }) => {
         <Card className="flex-1 min-h-[50vh] lg:h-[calc(100vh-12rem)] flex flex-col">
             <div className="flex justify-between items-center border-b border-neutral-200 pr-4">
                 <nav className="flex space-x-4" aria-label="Tabs">
-                    <button onClick={() => setActiveTab('ai')} className={`px-3 py-2 font-medium text-sm rounded-t-md ${activeTab === 'ai' ? 'border-b-2 border-primary text-primary' : 'text-neutral-500 hover:text-neutral-700'}`}>AI-Generated Notes</button>
+                    <button onClick={() => setActiveTab('ai')} className={`px-3 py-2 font-medium text-sm rounded-t-md ${activeTab === 'ai' ? 'border-b-2 border-primary text-primary' : 'text-neutral-500 hover:text-neutral-700'}`}>Minutes of Meet</button>
                     <button onClick={() => setActiveTab('manual')} className={`px-3 py-2 font-medium text-sm rounded-t-md ${activeTab === 'manual' ? 'border-b-2 border-primary text-primary' : 'text-neutral-500 hover:text-neutral-700'}`}>Manual Notes</button>
                 </nav>
                 {activeTab === 'ai' && meeting.aiNotes && (
@@ -128,10 +128,23 @@ const NotesPage: React.FC = () => {
 
     return (
         <div className="flex flex-col lg:flex-row gap-6">
-            <PeopleList onSelectPerson={handleSelectPerson} selectedPerson={selectedPerson} />
-            <MeetingHistory person={selectedPerson} onSelectMeeting={setSelectedMeeting} selectedMeetingId={selectedMeeting?.id || null} />
-            <NotesView meeting={selectedMeeting} />
-        </div>
+    <PeopleList
+        onSelectPerson={handleSelectPerson}
+        selectedPerson={selectedPerson}
+        className="w-full lg:w-1/5"  // 20% width on large screens
+    />
+    <MeetingHistory
+        person={selectedPerson}
+        onSelectMeeting={setSelectedMeeting}
+        selectedMeetingId={selectedMeeting?.id || null}
+        className="w-full lg:w-2/5"  // 40% width
+    />
+    <NotesView
+        meeting={selectedMeeting}
+        className="w-full lg:w-2/5"  // 40% width
+    />
+</div>
+
     );
 };
 
