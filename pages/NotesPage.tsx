@@ -128,10 +128,23 @@ const NotesPage: React.FC = () => {
 
     return (
         <div className="flex flex-col lg:flex-row gap-6">
-            <PeopleList onSelectPerson={handleSelectPerson} selectedPerson={selectedPerson} />
-            <MeetingHistory person={selectedPerson} onSelectMeeting={setSelectedMeeting} selectedMeetingId={selectedMeeting?.id || null} />
-            <NotesView meeting={selectedMeeting} />
-        </div>
+    <PeopleList
+        onSelectPerson={handleSelectPerson}
+        selectedPerson={selectedPerson}
+        className="w-full lg:w-1/5"  // 20% width on large screens
+    />
+    <MeetingHistory
+        person={selectedPerson}
+        onSelectMeeting={setSelectedMeeting}
+        selectedMeetingId={selectedMeeting?.id || null}
+        className="w-full lg:w-2/5"  // 40% width
+    />
+    <NotesView
+        meeting={selectedMeeting}
+        className="w-full lg:w-2/5"  // 40% width
+    />
+</div>
+
     );
 };
 
